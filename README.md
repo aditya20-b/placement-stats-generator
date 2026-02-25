@@ -35,12 +35,41 @@ Output is saved to `output/placement-report.pdf` by default.
 |---|---|
 | `-o, --output <path>` | Custom output path for the PDF |
 | `--no-charts` | Skip chart generation (faster, tables only) |
+| `--all` | Include all optional sections and charts |
 | `--sections` | Show individual section breakdown (AIDS A/B, IOT A/B) instead of merged branches |
 | `--gender` | Include gender-wise placement breakdown chart |
 | `--companies` | Include full company-wise offer table |
 | `--no-ctc` | Hide the CTC & offer type analysis page |
 | `--no-timeline` | Hide the month-by-month offer activity timeline |
 | `--ctc-brackets` | Show CTC bracket distribution chart (0–6, 6–10, 10–20, 20+ LPA) |
+| `--email` | Send the report via email after generation |
+| `--from <provider>` | Email provider: `gmail` or `college` (default: `gmail`) |
+| `--to <emails>` | Override recipient list at runtime (comma-separated) |
+
+## Email setup
+
+Copy `.env.example` to `.env` and fill in your credentials:
+
+```
+GMAIL_USER=you@gmail.com
+GMAIL_PASS=xxxx xxxx xxxx xxxx   # Google app password, not your account password
+                                  # Generate at: myaccount.google.com → Security → App passwords
+
+OUTLOOK_USER=you@college.edu.in
+OUTLOOK_PASS=yourpassword
+
+EMAIL_RECIPIENTS=recipient@example.com,another@example.com
+```
+
+Then send the report:
+
+```bash
+npx tsx src/index.ts --email                          # sends via Gmail to EMAIL_RECIPIENTS
+npx tsx src/index.ts --email --from college           # sends via college Outlook
+npx tsx src/index.ts --email --to someone@example.com # override recipients at runtime
+```
+
+The email includes a short summary of key stats and the PDF as an attachment.
 
 ## Data source
 
