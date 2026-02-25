@@ -8,6 +8,7 @@ import { computeStats, computeCtcStats } from './processor.js';
 import { generateCharts } from './charts.js';
 import { generatePdf } from './pdf-generator.js';
 import { getMasterCsvUrl, getOfferDetailsCsvUrl, OUTPUT_DIR, OUTPUT_FILENAME } from './config.js';
+import { sendReport } from './mailer.js';
 import type { ReportOptions } from './types.js';
 
 const program = new Command();
@@ -18,23 +19,28 @@ program
   .version('1.0.0')
   .option('-o, --output <path>', 'Output PDF file path', path.join(OUTPUT_DIR, OUTPUT_FILENAME))
   .option('--no-charts', 'Skip chart generation (faster, tables only)')
+  .option('--all', 'Include all optional sections and charts')
   .option('--sections', 'Show individual section breakdown (AIDS A/B, IOT A/B) instead of merged branches')
   .option('--gender', 'Include gender-wise placement breakdown chart')
   .option('--companies', 'Include company-wise breakdown page')
   .option('--no-ctc', 'Hide CTC & offer type analysis page')
   .option('--no-timeline', 'Hide month-by-month offer activity timeline')
   .option('--ctc-brackets', 'Show CTC bracket distribution chart (0–6, 6–10, 10–20, 20+ LPA)')
+  .option('--email', 'Send the report via email after generation')
+  .option('--from <provider>', 'Email provider to send from: gmail or college (default: gmail)', 'gmail')
+  .option('--to <emails>', 'Override recipient list (comma-separated); falls back to EMAIL_RECIPIENTS in .env')
   .action(async (opts) => {
     const outputPath: string  = opts.output;
     const withCharts: boolean = opts.charts !== false;
 
+    const all = !!opts.all;
     const reportOpts: ReportOptions = {
-      showSections:    !!opts.sections,
-      showGender:      !!opts.gender,
-      showCompanies:   !!opts.companies,
+      showSections:    all || !!opts.sections,
+      showGender:      all || !!opts.gender,
+      showCompanies:   all || !!opts.companies,
       showCtc:         opts.ctc !== false,
       showTimeline:    opts.timeline !== false,
-      showCtcBrackets: !!opts.ctcBrackets,
+      showCtcBrackets: all || !!opts.ctcBrackets,
     };
 
     console.log('');
@@ -82,6 +88,14 @@ program
       spinner.start('Rendering PDF report…');
       await generatePdf(stats, ctcStats, charts, outputPath, reportOpts);
       spinner.succeed(`PDF saved → ${path.resolve(outputPath)}`);
+
+      // Step 6: Email (optional)
+      if (opts.email) {
+        const provider = opts.from === 'college' ? 'college' : 'gmail';
+        spinner.start('Sending email…');
+        const recipients = await sendReport(outputPath, stats, ctcStats, provider, opts.to);
+        spinner.succeed(`Email sent → ${recipients.join(', ')}`);
+      }
 
       console.log('');
       console.log('✅ Report generated successfully!');
