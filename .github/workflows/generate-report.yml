@@ -1,0 +1,165 @@
+name: Generate Placement Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      flags:
+        description: 'Space-separated CLI flags (e.g. --gender --companies)'
+        required: false
+        default: ''
+      spreadsheet_id:
+        description: 'Optional override for Google Sheets spreadsheet ID'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set timestamps
+        run: |
+          echo "TIMESTAMP=$(date -u +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
+          echo "ISO_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install canvas system dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+            build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run CLI and capture output
+        run: |
+          OUTPUT="./output/placement-report-${{ env.TIMESTAMP }}.pdf"
+          mkdir -p ./output
+          CMD="npx tsx src/index.ts -o $OUTPUT ${{ github.event.inputs.flags }}"
+          if [ -n "${{ github.event.inputs.spreadsheet_id }}" ]; then
+            CMD="$CMD --spreadsheet-id ${{ github.event.inputs.spreadsheet_id }}"
+          fi
+          $CMD 2>&1 | tee /tmp/cli-output.txt
+          test -f "$OUTPUT" || exit 1
+          echo "PDF_PATH=$OUTPUT" >> $GITHUB_ENV
+          if [ -n "${{ github.event.inputs.spreadsheet_id }}" ]; then
+            echo "EFFECTIVE_SHEET_ID=${{ github.event.inputs.spreadsheet_id }}" >> $GITHUB_ENV
+          else
+            echo "EFFECTIVE_SHEET_ID=DEFAULT" >> $GITHUB_ENV
+          fi
+
+      - name: Extract stats from CLI output
+        run: |
+          node --input-type=module << 'EOF'
+          import { readFileSync } from 'fs';
+          import { appendFileSync } from 'fs';
+
+          const output = readFileSync('/tmp/cli-output.txt', 'utf8');
+          const line = output.split('\n').find(l => l.includes('REPORT_STATS'));
+          if (!line) {
+            console.error('ERROR: REPORT_STATS line not found in CLI output');
+            process.exit(1);
+          }
+
+          const pairs = {};
+          const matches = line.match(/(\w+)=([^\s]+)/g) || [];
+          for (const match of matches) {
+            const [key, value] = match.split('=');
+            pairs[key] = value;
+          }
+
+          const envFile = process.env.GITHUB_ENV;
+          appendFileSync(envFile, `STAT_PLACED=${pairs.placed ?? ''}\n`);
+          appendFileSync(envFile, `STAT_OPT=${pairs.optPlacement ?? ''}\n`);
+          appendFileSync(envFile, `STAT_PCT=${pairs.placementPercent ?? ''}\n`);
+          appendFileSync(envFile, `STAT_COMPANIES=${pairs.totalCompanies ?? ''}\n`);
+          appendFileSync(envFile, `STAT_MEDIAN_CTC=${pairs.medianCtc ?? ''}\n`);
+
+          console.log('Stats extracted:', pairs);
+          EOF
+
+      - name: Checkout or create reports branch via git worktree
+        run: |
+          git fetch origin reports --depth=1 2>/dev/null || true
+          if git ls-remote --exit-code --heads origin reports > /dev/null 2>&1; then
+            git worktree add ./reports-branch reports
+          else
+            git worktree add --orphan -b reports ./reports-branch
+          fi
+
+      - name: Copy PDF to worktree
+        run: |
+          cp "${{ env.PDF_PATH }}" "./reports-branch/placement-report-${{ env.TIMESTAMP }}.pdf"
+
+      - name: Update index.json
+        run: |
+          node --input-type=module << 'EOF'
+          import { readFileSync, writeFileSync, existsSync } from 'fs';
+
+          const indexPath = './reports-branch/index.json';
+          const existing = existsSync(indexPath)
+            ? JSON.parse(readFileSync(indexPath, 'utf8'))
+            : [];
+
+          const flagsRaw = '${{ github.event.inputs.flags }}';
+          const flags = flagsRaw.trim() ? flagsRaw.trim().split(/\s+/) : [];
+          const spreadsheetId = '${{ env.EFFECTIVE_SHEET_ID }}';
+
+          const entry = {
+            id: '${{ env.TIMESTAMP }}',
+            timestamp: '${{ env.ISO_TS }}',
+            filename: 'placement-report-${{ env.TIMESTAMP }}.pdf',
+            flags,
+            spreadsheetId: spreadsheetId === 'DEFAULT' ? null : spreadsheetId,
+            stats: {
+              placed: parseInt('${{ env.STAT_PLACED }}', 10) || 0,
+              optPlacement: parseInt('${{ env.STAT_OPT }}', 10) || 0,
+              placementPercent: '${{ env.STAT_PCT }}',
+              totalCompanies: parseInt('${{ env.STAT_COMPANIES }}', 10) || 0,
+              medianCtc: '${{ env.STAT_MEDIAN_CTC }}',
+            },
+          };
+
+          const updated = [entry, ...existing];
+          writeFileSync(indexPath, JSON.stringify(updated, null, 2));
+          console.log('index.json updated with', updated.length, 'entries');
+          EOF
+
+      - name: Commit and push to reports branch
+        run: |
+          cd ./reports-branch
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "placement-report-${{ env.TIMESTAMP }}.pdf" index.json
+          git commit -m "report: ${{ env.TIMESTAMP }}"
+          git push origin HEAD:reports
+
+      - name: Write job summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## Placement Report Generated
+
+          | Metric | Value |
+          |--------|-------|
+          | Placed / Opt-in | ${{ env.STAT_PLACED }} / ${{ env.STAT_OPT }} |
+          | Placement % | ${{ env.STAT_PCT }}% |
+          | Total Companies | ${{ env.STAT_COMPANIES }} |
+          | Median CTC | ₹${{ env.STAT_MEDIAN_CTC }}L |
+          | Report file | placement-report-${{ env.TIMESTAMP }}.pdf |
+          | Timestamp | ${{ env.ISO_TS }} |
+          EOF
