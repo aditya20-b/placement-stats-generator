@@ -1,6 +1,5 @@
 {
   "framework": "nextjs",
-  "rootDirectory": "frontend",
   "installCommand": "pnpm install --ignore-workspace",
   "buildCommand": "pnpm build",
   "devCommand": "pnpm dev --port $PORT",
