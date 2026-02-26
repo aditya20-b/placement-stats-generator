@@ -11,9 +11,7 @@ const SHEET_URL_RE =
 
 function extractSheetId(input: string): string | null {
   const trimmed = input.trim();
-  // Direct ID (no slashes)
   if (/^[a-zA-Z0-9_-]{10,60}$/.test(trimmed)) return trimmed;
-  // Full URL
   const match = trimmed.match(SHEET_URL_RE);
   return match ? match[1] : null;
 }
@@ -41,48 +39,124 @@ export function SettingsPanel({ onChange }: SettingsPanelProps) {
   }
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white">
+    <div
+      style={{
+        borderTop: '1px solid var(--border)',
+        paddingTop: '16px',
+      }}
+    >
       <button
-        className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
         onClick={() => setOpen((o) => !o)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          color: 'var(--text-2)',
+          fontSize: '13px',
+          fontFamily: 'var(--font-body)',
+          fontWeight: '450',
+          padding: '0',
+          transition: 'color 0.15s',
+        }}
       >
-        <span>Advanced Settings</span>
         <svg
-          className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`}
-          viewBox="0 0 16 16"
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="1.5"
+          style={{
+            transition: 'transform 0.2s',
+            transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
+          }}
         >
-          <path d="M4 6l4 4 4-4" />
+          <path d="M5 3l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
+        Advanced settings
+        {input.trim() && !error && (
+          <span
+            style={{
+              marginLeft: '4px',
+              padding: '1px 7px',
+              borderRadius: '20px',
+              background: 'var(--accent-bg)',
+              color: 'var(--accent)',
+              fontSize: '11px',
+              fontWeight: '500',
+            }}
+          >
+            custom sheet
+          </span>
+        )}
       </button>
 
       {open && (
-        <div className="border-t border-zinc-200 px-4 py-4 space-y-3">
-          <div>
-            <label className="block text-xs font-semibold text-zinc-600 uppercase tracking-wide mb-1">
-              Custom Spreadsheet
-            </label>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => handleChange(e.target.value)}
-              placeholder="Paste Google Sheets URL or spreadsheet ID"
-              className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-            {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
-            {!error && input.trim() && (
-              <p className="mt-1 text-xs text-green-600">
-                Using sheet: {extractSheetId(input)}
-              </p>
-            )}
-            {!input.trim() && (
-              <p className="mt-1 text-xs text-zinc-400">
-                Leave blank to use the default sheet
-              </p>
-            )}
-          </div>
+        <div
+          style={{
+            marginTop: '14px',
+            padding: '16px',
+            background: 'var(--bg)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border)',
+          }}
+          className="animate-fade-up"
+        >
+          <label
+            style={{
+              display: 'block',
+              fontSize: '11px',
+              fontWeight: '600',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              color: 'var(--text-3)',
+              marginBottom: '8px',
+            }}
+          >
+            Custom Spreadsheet
+          </label>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => handleChange(e.target.value)}
+            placeholder="Paste Google Sheets URL or spreadsheet ID"
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              borderRadius: 'var(--radius-sm)',
+              border: `1.5px solid ${error ? 'var(--danger)' : 'var(--border)'}`,
+              background: 'var(--surface)',
+              color: 'var(--text)',
+              fontSize: '13px',
+              fontFamily: 'var(--font-body)',
+              outline: 'none',
+              transition: 'border-color 0.15s',
+            }}
+            onFocus={(e) => {
+              if (!error) (e.target as HTMLInputElement).style.borderColor = 'var(--accent)';
+            }}
+            onBlur={(e) => {
+              if (!error) (e.target as HTMLInputElement).style.borderColor = 'var(--border)';
+            }}
+          />
+          {error && (
+            <p style={{ marginTop: '6px', fontSize: '12px', color: 'var(--danger)' }}>
+              {error}
+            </p>
+          )}
+          {!error && input.trim() && (
+            <p style={{ marginTop: '6px', fontSize: '12px', color: 'var(--success)' }}>
+              ✓ Using: {extractSheetId(input)}
+            </p>
+          )}
+          {!input.trim() && (
+            <p style={{ marginTop: '6px', fontSize: '12px', color: 'var(--text-3)' }}>
+              Leave blank to use the default sheet
+            </p>
+          )}
         </div>
       )}
     </div>

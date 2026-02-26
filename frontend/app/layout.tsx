@@ -1,17 +1,7 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import Link from 'next/link';
+import { NavLinks } from '@/components/NavLinks';
 import './globals.css';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
   title: 'Placement Stats — Shiv Nadar University Chennai',
@@ -20,47 +10,83 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-50 text-zinc-900`}
-      >
-        <header className="border-b border-zinc-200 bg-white">
-          <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600">
-                <svg
-                  className="h-4 w-4 text-white"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                >
-                  <path d="M2 2h5v5H2V2zm7 0h5v5H9V2zM2 9h5v5H2V9zm7 0h5v5H9V9z" />
+      <body>
+        <nav
+          style={{
+            background: 'var(--nav-bg)',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 50,
+          }}
+        >
+          <div
+            style={{
+              maxWidth: '1000px',
+              margin: '0 auto',
+              padding: '0 24px',
+              height: '52px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Link
+              href="/"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                textDecoration: 'none',
+              }}
+            >
+              <div
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+                  borderRadius: '7px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect x="1" y="1" width="5" height="5" rx="1" fill="white" fillOpacity="0.9"/>
+                  <rect x="8" y="1" width="5" height="5" rx="1" fill="white" fillOpacity="0.6"/>
+                  <rect x="1" y="8" width="5" height="5" rx="1" fill="white" fillOpacity="0.6"/>
+                  <rect x="8" y="8" width="5" height="5" rx="1" fill="white" fillOpacity="0.9"/>
                 </svg>
               </div>
-              <span className="text-sm font-semibold text-zinc-900">
+              <span
+                style={{
+                  color: '#FAFAFA',
+                  fontSize: '13.5px',
+                  fontWeight: '600',
+                  letterSpacing: '0.01em',
+                }}
+              >
                 Placement Stats
               </span>
             </Link>
-            <nav className="flex items-center gap-4 text-sm">
-              <Link
-                href="/"
-                className="text-zinc-600 transition-colors hover:text-zinc-900"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/history"
-                className="text-zinc-600 transition-colors hover:text-zinc-900"
-              >
-                History
-              </Link>
-            </nav>
+
+            <NavLinks />
           </div>
-        </header>
-        <main className="mx-auto max-w-4xl px-4 py-8">{children}</main>
+        </nav>
+
+        <main
+          style={{
+            maxWidth: '1000px',
+            margin: '0 auto',
+            padding: '40px 24px 80px',
+          }}
+        >
+          {children}
+        </main>
       </body>
     </html>
   );

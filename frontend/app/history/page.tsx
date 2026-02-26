@@ -9,21 +9,53 @@ export default async function HistoryPage() {
   try {
     reports = await fetchReportsIndex();
   } catch {
-    // Reports branch may not exist yet
+    // reports branch may not exist yet
   }
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-900">Report History</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+      <div style={{ marginBottom: '32px' }} className="animate-fade-up-1">
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
+          <h1
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '30px',
+              fontWeight: '400',
+              color: 'var(--text)',
+              margin: 0,
+              lineHeight: 1.15,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Report History
+          </h1>
+          {reports.length > 0 && (
+            <span
+              style={{
+                padding: '2px 9px',
+                borderRadius: '20px',
+                background: 'var(--border)',
+                fontSize: '12px',
+                color: 'var(--text-2)',
+                fontWeight: '500',
+                position: 'relative',
+                top: '-1px',
+              }}
+            >
+              {reports.length}
+            </span>
+          )}
+        </div>
+        <p style={{ fontSize: '13.5px', color: 'var(--text-3)', margin: 0 }}>
           {reports.length === 0
             ? 'No reports generated yet'
-            : `${reports.length} report${reports.length === 1 ? '' : 's'} — newest first`}
+            : 'All generated reports — newest first'}
         </p>
       </div>
 
-      <HistoryList reports={reports} />
+      <div className="animate-fade-up-2">
+        <HistoryList reports={reports} />
+      </div>
     </div>
   );
 }

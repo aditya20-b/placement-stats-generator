@@ -9,80 +9,78 @@ interface StatusBadgeProps {
 
 const CONFIG: Record<
   WorkflowStatus,
-  { label: string; color: string; animate: boolean }
+  { label: string; bg: string; color: string; dot?: string }
 > = {
-  idle: { label: 'Idle', color: 'bg-zinc-100 text-zinc-500', animate: false },
-  queued: {
-    label: 'Queued',
-    color: 'bg-amber-100 text-amber-700',
-    animate: true,
-  },
-  in_progress: {
-    label: 'Running',
-    color: 'bg-blue-100 text-blue-700',
-    animate: true,
-  },
-  completed: {
-    label: 'Completed',
-    color: 'bg-green-100 text-green-700',
-    animate: false,
-  },
-  failed: {
-    label: 'Failed',
-    color: 'bg-red-100 text-red-700',
-    animate: false,
-  },
-  timeout: {
-    label: 'Timed out',
-    color: 'bg-orange-100 text-orange-700',
-    animate: false,
-  },
-  error: {
-    label: 'Error',
-    color: 'bg-red-100 text-red-700',
-    animate: false,
-  },
+  idle:        { label: 'Idle',       bg: 'transparent',          color: 'var(--text-3)',  },
+  queued:      { label: 'Queued',     bg: 'var(--warning-bg)',     color: 'var(--warning)', dot: '#F59E0B' },
+  in_progress: { label: 'Running',    bg: 'var(--accent-bg)',      color: 'var(--accent)',  dot: '#3B82F6' },
+  completed:   { label: 'Done',       bg: 'var(--success-bg)',     color: 'var(--success)'  },
+  failed:      { label: 'Failed',     bg: 'var(--danger-bg)',      color: 'var(--danger)'   },
+  timeout:     { label: 'Timed out',  bg: 'var(--warning-bg)',     color: 'var(--warning)'  },
+  error:       { label: 'Error',      bg: 'var(--danger-bg)',      color: 'var(--danger)'   },
 };
 
-function formatElapsed(seconds: number): string {
-  if (seconds < 60) return `${seconds}s`;
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}m ${s}s`;
+function fmt(s: number) {
+  return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`;
 }
 
 export function StatusBadge({ status, elapsedSeconds }: StatusBadgeProps) {
   if (status === 'idle') return null;
 
-  const { label, color, animate } = CONFIG[status];
+  const { label, bg, color, dot } = CONFIG[status];
+  const pulsing = !!dot;
 
   return (
-    <div
-      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${color}`}
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '7px',
+        padding: '5px 11px 5px 9px',
+        borderRadius: '20px',
+        background: bg,
+        color,
+        fontSize: '12.5px',
+        fontWeight: '500',
+        letterSpacing: '0.01em',
+      }}
+      className="animate-fade-up"
     >
-      {animate && (
-        <span className="relative flex h-2 w-2">
+      {pulsing ? (
+        <span style={{ position: 'relative', width: '8px', height: '8px', flexShrink: 0 }}>
           <span
-            className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${
-              status === 'queued' ? 'bg-amber-400' : 'bg-blue-400'
-            }`}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              background: dot,
+              animation: 'pulse-ring 1.4s ease-out infinite',
+            }}
           />
           <span
-            className={`relative inline-flex h-2 w-2 rounded-full ${
-              status === 'queued' ? 'bg-amber-500' : 'bg-blue-500'
-            }`}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              background: dot,
+            }}
           />
         </span>
+      ) : status === 'completed' ? (
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="6" cy="6" r="5"/>
+          <path d="M3.5 6l2 2 3-3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ) : (
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="6" cy="6" r="5"/>
+          <path d="M6 4v2l1.5 1.5" strokeLinecap="round"/>
+        </svg>
       )}
-      {!animate && status === 'completed' && <span>✓</span>}
-      {!animate && (status === 'failed' || status === 'error') && (
-        <span>✗</span>
-      )}
-      {!animate && status === 'timeout' && <span>⏱</span>}
       <span>{label}</span>
-      {elapsedSeconds > 0 && animate && (
-        <span className="opacity-70">· {formatElapsed(elapsedSeconds)}</span>
+      {pulsing && elapsedSeconds > 0 && (
+        <span style={{ opacity: 0.65 }}>· {fmt(elapsedSeconds)}</span>
       )}
-    </div>
+    </span>
   );
 }

@@ -20,54 +20,83 @@ export function DashboardClient({ latestReport }: DashboardClientProps) {
 
   const isRunning = status === 'queued' || status === 'in_progress';
 
-  function handleRunId(runId: number) {
-    startPolling(runId);
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm space-y-5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Generator card */}
+      <div
+        style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-lg)',
+          padding: '24px',
+          boxShadow: 'var(--shadow-sm)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+        }}
+        className="animate-fade-up-2"
+      >
         <FlagToggles onChange={setActiveFlags} />
         <SettingsPanel onChange={setSpreadsheetId} />
 
-        <div className="flex items-center gap-4 pt-1">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '4px' }}>
           <GenerateButton
             flags={activeFlags}
             spreadsheetId={spreadsheetId}
-            onRunId={handleRunId}
+            onRunId={(runId) => startPolling(runId)}
             disabled={isRunning}
           />
           <StatusBadge status={status} elapsedSeconds={elapsedSeconds} />
         </div>
 
         {status === 'failed' && (
-          <p className="text-sm text-red-600">
-            Report generation failed. Check the{' '}
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              GitHub Actions logs
-            </a>{' '}
-            for details.
-          </p>
+          <div
+            style={{
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--danger-bg)',
+              border: '1px solid rgba(220,38,38,0.15)',
+              fontSize: '13px',
+              color: 'var(--danger)',
+            }}
+            className="animate-fade-up"
+          >
+            Generation failed. Check GitHub Actions for details.
+          </div>
         )}
         {status === 'timeout' && (
-          <p className="text-sm text-orange-600">
-            Polling timed out. The job may still be running. Check GitHub
-            Actions for the result.
-          </p>
+          <div
+            style={{
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--warning-bg)',
+              border: '1px solid rgba(180,83,9,0.15)',
+              fontSize: '13px',
+              color: 'var(--warning)',
+            }}
+            className="animate-fade-up"
+          >
+            Polling timed out. The job may still be running — check GitHub Actions.
+          </div>
         )}
         {status === 'error' && (
-          <p className="text-sm text-red-600">
-            Lost connection while polling status. Refresh the page to check for
-            new reports.
-          </p>
+          <div
+            style={{
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--danger-bg)',
+              border: '1px solid rgba(220,38,38,0.15)',
+              fontSize: '13px',
+              color: 'var(--danger)',
+            }}
+            className="animate-fade-up"
+          >
+            Lost connection while polling. Refresh to check for new reports.
+          </div>
         )}
       </div>
 
+      {/* Latest report */}
       <LatestReport report={latestReport} />
     </div>
   );

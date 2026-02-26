@@ -9,19 +9,32 @@ export default async function HomePage() {
   try {
     reports = await fetchReportsIndex();
   } catch {
-    // Reports branch may not exist yet — proceed with empty state
+    // reports branch may not exist yet
   }
 
   const latestReport = reports[0] ?? null;
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-900">
-          Placement Report Generator
-        </h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Shiv Nadar University Chennai · Batch 2025
+      {/* Page header */}
+      <div style={{ marginBottom: '32px' }} className="animate-fade-up-1">
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
+          <h1
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: '30px',
+              fontWeight: '400',
+              color: 'var(--text)',
+              margin: 0,
+              lineHeight: 1.15,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Report Generator
+          </h1>
+        </div>
+        <p style={{ fontSize: '13.5px', color: 'var(--text-3)', margin: 0 }}>
+          Shiv Nadar University Chennai &nbsp;·&nbsp; Batch 2025
         </p>
       </div>
 
