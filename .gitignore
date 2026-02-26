@@ -1,3 +1,6 @@
 node_modules/
 dist/
 output/*
+frontend/.next/
+frontend/node_modules/
+frontend/.env.local
