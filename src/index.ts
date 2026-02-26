@@ -24,7 +24,12 @@ program
   .option('--no-ctc', 'Hide CTC & offer type analysis page')
   .option('--no-timeline', 'Hide month-by-month offer activity timeline')
   .option('--ctc-brackets', 'Show CTC bracket distribution chart (0–6, 6–10, 10–20, 20+ LPA)')
+  .option('--spreadsheet-id <id>', 'Override the Google Sheets spreadsheet ID')
   .action(async (opts) => {
+    if (opts.spreadsheetId) {
+      process.env.SPREADSHEET_ID = opts.spreadsheetId;
+    }
+
     const outputPath: string  = opts.output;
     const withCharts: boolean = opts.charts !== false;
 
@@ -66,6 +71,12 @@ program
       spinner.succeed(
         `Stats computed — ${stats.placed}/${stats.optPlacement} placed ` +
         `(${stats.overallPlacementPercent}%) | Median CTC: ₹${(ctcStats.median / 100000).toFixed(2)}L`
+      );
+      console.log(
+        `REPORT_STATS placed=${stats.placed} optPlacement=${stats.optPlacement}` +
+        ` placementPercent=${stats.overallPlacementPercent}` +
+        ` totalCompanies=${stats.totalCompanies}` +
+        ` medianCtc=${(ctcStats.median / 100000).toFixed(2)}`
       );
 
       // Step 4: Charts
