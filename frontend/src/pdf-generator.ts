@@ -167,17 +167,13 @@ function drawPage1(doc: PDFKit.PDFDocument, stats: PlacementStats, charts: Chart
   y += 2 * (cardH + gapY) + 10;
 
   // ── Pie chart ─────────────────────────────────────────────────────────────
-  chartTitle(doc, 'Placement Status Distribution', y);
-  y += 20;
-
   if (charts) {
+    chartTitle(doc, 'Placement Status Distribution', y);
+    y += 20;
     const chartW = 420;
     const chartH = 300;
     doc.image(charts.overallPie, (PAGE_W - chartW) / 2, y, { width: chartW, height: chartH });
     y += chartH + 10;
-  } else {
-    drawPlaceholder(doc, MARGIN, y, CONTENT_W, 200, 'Pie chart (run without --no-charts to enable)');
-    y += 210;
   }
 
   // ── Legend strip ──────────────────────────────────────────────────────────
@@ -213,14 +209,11 @@ function drawPage2(doc: PDFKit.PDFDocument, stats: PlacementStats, charts: Chart
   const chartImg   = showSections ? charts?.branchBarSections : charts?.branchBarMerged;
   const branchData = showSections ? stats.branches : stats.mergedBranches;
 
-  chartTitle(doc, showSections ? 'Section-wise Placement Percentage' : 'Branch-wise Placement Percentage', y);
-  y += 20;
   if (charts && chartImg) {
+    chartTitle(doc, showSections ? 'Section-wise Placement Percentage' : 'Branch-wise Placement Percentage', y);
+    y += 20;
     doc.image(chartImg, MARGIN, y, { width: CONTENT_W, height: 220 });
     y += 228;
-  } else {
-    drawPlaceholder(doc, MARGIN, y, CONTENT_W, 200, 'Branch bar chart');
-    y += 210;
   }
 
   // ── Branch table ───────────────────────────────────────────────────────────
@@ -262,36 +255,18 @@ function drawPage2(doc: PDFKit.PDFDocument, stats: PlacementStats, charts: Chart
   y += 16;
 
   // ── Gender grouped bar (optional) ─────────────────────────────────────────
-  if (opts.showGender) {
+  if (opts.showGender && charts) {
     const spaceForGender = PAGE_H - MARGIN - y - 35;
-    if (spaceForGender > 160) {
-      chartTitle(doc, 'Gender-wise Placement Percentage by Branch', y);
-      y += 20;
-      if (charts) {
-        doc.image(charts.genderGroupedBar, MARGIN, y, { width: CONTENT_W, height: Math.min(spaceForGender - 20, 220) });
-      } else {
-        drawPlaceholder(doc, MARGIN, y, CONTENT_W, 180, 'Gender grouped bar chart');
-      }
-    } else {
-      chartTitle(doc, 'Gender-wise Placement Percentage by Branch', y);
-      y += 20;
-      if (charts) {
-        doc.image(charts.genderGroupedBar, MARGIN, y, { width: CONTENT_W, height: 220 });
-      } else {
-        drawPlaceholder(doc, MARGIN, y, CONTENT_W, 180, 'Gender grouped bar chart');
-      }
-    }
-  } else {
+    chartTitle(doc, 'Gender-wise Placement Percentage by Branch', y);
+    y += 20;
+    doc.image(charts.genderGroupedBar, MARGIN, y, { width: CONTENT_W, height: Math.min(Math.max(spaceForGender - 20, 160), 220) });
+  } else if (!opts.showGender && charts) {
     // ── Class-wise stacked overview (when gender is hidden) ──────────────────
     const spaceLeft = PAGE_H - MARGIN - y - 35;
     if (spaceLeft > 160) {
       chartTitle(doc, 'Class-wise Student Status Overview', y);
       y += 20;
-      if (charts) {
-        doc.image(charts.classStackedBar, MARGIN, y, { width: CONTENT_W, height: Math.min(spaceLeft - 20, 210) });
-      } else {
-        drawPlaceholder(doc, MARGIN, y, CONTENT_W, 180, 'Class stacked bar chart');
-      }
+      doc.image(charts.classStackedBar, MARGIN, y, { width: CONTENT_W, height: Math.min(spaceLeft - 20, 210) });
     }
   }
 
@@ -330,15 +305,12 @@ function drawPage3(doc: PDFKit.PDFDocument, _stats: PlacementStats, ctcStats: Ct
   y += 76;
 
   // ── Offer type bar (full width) ────────────────────────────────────────────
-  chartTitle(doc, 'Offer Type Distribution', y);
-  y += 20;
-  const offerChartH = 200;
   if (charts) {
-    doc.image(charts.offerTypeBar, MARGIN, y, { width: CONTENT_W, height: offerChartH });
-  } else {
-    drawPlaceholder(doc, MARGIN, y, CONTENT_W, offerChartH, 'Offer type bar chart');
+    chartTitle(doc, 'Offer Type Distribution', y);
+    y += 20;
+    doc.image(charts.offerTypeBar, MARGIN, y, { width: CONTENT_W, height: 200 });
+    y += 210;
   }
-  y += offerChartH + 10;
 
   // ── Offer type breakdown table (with CTC band column) ─────────────────────
   const allOffers = Object.values(ctcStats.offerTypeBreakdown).reduce((s, v) => s + v, 0);
@@ -373,14 +345,12 @@ function drawPage3(doc: PDFKit.PDFDocument, _stats: PlacementStats, ctcStats: Ct
       drawPageHeader(doc, 'CTC & Offer Type Analysis (cont.)');
       y = 80;
     }
-    chartTitle(doc, 'CTC Bracket Distribution (placement offers only)', y);
-    y += 20;
     if (charts) {
+      chartTitle(doc, 'CTC Bracket Distribution (placement offers only)', y);
+      y += 20;
       doc.image(charts.ctcBracketsBar, MARGIN, y, { width: CONTENT_W, height: 200 });
-    } else {
-      drawPlaceholder(doc, MARGIN, y, CONTENT_W, 180, 'CTC bracket chart');
+      y += 210;
     }
-    y += 210;
   }
 
   // ── Month-by-month timeline (optional) ────────────────────────────────────
@@ -391,13 +361,11 @@ function drawPage3(doc: PDFKit.PDFDocument, _stats: PlacementStats, ctcStats: Ct
       drawPageHeader(doc, 'CTC & Offer Type Analysis (cont.)');
       y = 80;
     }
-    chartTitle(doc, 'Month-by-month Offer Activity', y);
-    y += 20;
-    const timelineH = Math.min(PAGE_H - MARGIN - y - 35, 200);
     if (charts) {
+      chartTitle(doc, 'Month-by-month Offer Activity', y);
+      y += 20;
+      const timelineH = Math.min(PAGE_H - MARGIN - y - 35, 200);
       doc.image(charts.timeline, MARGIN, y, { width: CONTENT_W, height: timelineH });
-    } else {
-      drawPlaceholder(doc, MARGIN, y, CONTENT_W, timelineH, 'Timeline chart');
     }
   }
 
@@ -412,14 +380,11 @@ function drawPage4(doc: PDFKit.PDFDocument, stats: PlacementStats, pageNum: numb
   let y = 80;
 
   // ── Top recruiters chart ───────────────────────────────────────────────────
-  chartTitle(doc, 'Top 10 Recruiters by Offer Count', y);
-  y += 20;
   if (charts) {
+    chartTitle(doc, 'Top 10 Recruiters by Offer Count', y);
+    y += 20;
     doc.image(charts.topRecruitersHBar, MARGIN, y, { width: CONTENT_W, height: 240 });
     y += 248;
-  } else {
-    drawPlaceholder(doc, MARGIN, y, CONTENT_W, 200, 'Top recruiters chart');
-    y += 210;
   }
 
   // ── Company table with merged branch columns (AIDS, IOT, CS) ──────────────
