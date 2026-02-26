@@ -5,6 +5,7 @@ import type { ReportEntry } from '@/types/report';
 import { FlagToggles } from './FlagToggles';
 import { SettingsPanel } from './SettingsPanel';
 import { GenerateButton } from './GenerateButton';
+import { QuickGenerateButton } from './QuickGenerateButton';
 import { StatusBadge } from './StatusBadge';
 import { LatestReport } from './LatestReport';
 import { useWorkflowPoller } from '@/hooks/useWorkflowPoller';
@@ -39,7 +40,8 @@ export function DashboardClient({ latestReport }: DashboardClientProps) {
         <FlagToggles onChange={setActiveFlags} />
         <SettingsPanel onChange={setSpreadsheetId} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', paddingTop: '4px' }}>
+          <QuickGenerateButton flags={activeFlags} spreadsheetId={spreadsheetId} />
           <GenerateButton
             flags={activeFlags}
             spreadsheetId={spreadsheetId}
