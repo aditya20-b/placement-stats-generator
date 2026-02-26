@@ -1,10 +1,11 @@
 import { fetchReportsIndex } from '@/lib/reports';
 import { DashboardClient } from '@/components/DashboardClient';
+import type { ReportEntry } from '@/types/report';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  let reports = [];
+  let reports: ReportEntry[] = [];
   try {
     reports = await fetchReportsIndex();
   } catch {
