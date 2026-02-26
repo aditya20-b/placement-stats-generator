@@ -2,12 +2,16 @@ export const SPREADSHEET_ID = '1U2qXle0-70mWfAj9En_YoQJShbcI2fYY230kCGbLiXE';
 export const MASTER_GID = '1878175017';
 export const OFFER_DETAILS_GID = '208317160';
 
-function csvUrl(gid: string): string {
-  return `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
+export function getSpreadsheetId(): string {
+  return process.env.SPREADSHEET_ID ?? SPREADSHEET_ID;
 }
 
-export const getMasterCsvUrl      = () => csvUrl(MASTER_GID);
-export const getOfferDetailsCsvUrl = () => csvUrl(OFFER_DETAILS_GID);
+function csvUrl(sheetId: string, gid: string): string {
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+}
+
+export const getMasterCsvUrl      = () => csvUrl(getSpreadsheetId(), MASTER_GID);
+export const getOfferDetailsCsvUrl = () => csvUrl(getSpreadsheetId(), OFFER_DETAILS_GID);
 
 export const BRANCH_ORDER = ['AIDS A', 'AIDS B', 'IOT A', 'IOT B', 'CS'];
 
