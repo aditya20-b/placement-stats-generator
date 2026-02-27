@@ -7,8 +7,9 @@ import { DEFAULT_OPTIONS } from './types.js';
 import { MERGED_BRANCH_ORDER, INSTITUTION, REPORT_TITLE } from './config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const LOGO_PATH = path.join(__dirname, '..', 'assets', 'logo.png');
-const SHOW_LOGO = false; // set to true once branding is finalised
+const LOGO_PATH = path.join(__dirname, '..', 'assets', 'snu-logo.png');
+const LOGO_RATIO = 859 / 290; // actual pixel dimensions of snu-logo.png
+const SHOW_LOGO = true;
 
 // ─── Palette ────────────────────────────────────────────────────────────────
 const NAVY   = '#1E3A5F';
@@ -100,30 +101,27 @@ function drawPage1(doc: PDFKit.PDFDocument, stats: PlacementStats, charts: Chart
   const logoExists = SHOW_LOGO && fs.existsSync(LOGO_PATH);
   if (logoExists) {
     const logoH = 48;
-    const logoW = Math.round(logoH * (320 / 90));
+    const logoW = Math.round(logoH * LOGO_RATIO);
     doc.image(LOGO_PATH, MARGIN, (90 - logoH) / 2, { width: logoW, height: logoH });
   }
 
-  const textX = logoExists ? MARGIN + Math.round(48 * (320 / 90)) + 8 : MARGIN;
+  const logoW = logoExists ? Math.round(48 * LOGO_RATIO) : 0;
+  const textX = logoExists ? MARGIN + logoW + 16 : MARGIN;
   const textW = PAGE_W - textX - MARGIN;
-
-  doc.fillColor(WHITE)
-     .font('Helvetica-Bold')
-     .fontSize(18)
-     .text(INSTITUTION, textX, 18, { width: textW, align: 'center' });
-
-  doc.font('Helvetica')
-     .fontSize(12)
-     .fillColor('#93C5FD')
-     .text(REPORT_TITLE, textX, 44, { width: textW, align: 'center' });
 
   const dateStr = new Date().toLocaleDateString('en-IN', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
+
+  doc.fillColor(WHITE)
+     .font('Helvetica-Bold')
+     .fontSize(18)
+     .text(REPORT_TITLE, textX, 26, { width: textW, align: 'center' });
+
   doc.font('Helvetica')
      .fontSize(9)
      .fillColor('#CBD5E1')
-     .text(`Generated on ${dateStr}`, textX, 66, { width: textW, align: 'center' });
+     .text(`Generated on ${dateStr}`, textX, 56, { width: textW, align: 'center' });
 
   y = 106;
 
@@ -464,17 +462,16 @@ function drawPageHeader(doc: PDFKit.PDFDocument, sectionTitle: string) {
   const logoExists = SHOW_LOGO && fs.existsSync(LOGO_PATH);
   if (logoExists) {
     const logoH = 36;
-    const logoW = Math.round(logoH * (320 / 90));
+    const logoW = Math.round(logoH * LOGO_RATIO);
     doc.image(LOGO_PATH, MARGIN, (64 - logoH) / 2, { width: logoW, height: logoH });
   }
 
-  const textX = logoExists ? MARGIN + Math.round(36 * (320 / 90)) + 8 : MARGIN;
-  const textW = PAGE_W - textX - MARGIN;
+  const secLogoW = logoExists ? Math.round(36 * LOGO_RATIO) : 0;
+  const secTextX = logoExists ? MARGIN + secLogoW + 16 : MARGIN;
+  const secTextW = PAGE_W - secTextX - MARGIN;
 
-  doc.fillColor(WHITE).font('Helvetica-Bold').fontSize(13)
-     .text(INSTITUTION, textX, 10, { width: textW, align: 'center' });
-  doc.fillColor('#93C5FD').font('Helvetica').fontSize(11)
-     .text(sectionTitle, textX, 32, { width: textW, align: 'center' });
+  doc.fillColor('#93C5FD').font('Helvetica-Bold').fontSize(13)
+     .text(sectionTitle, secTextX, 24, { width: secTextW, align: 'center' });
 }
 
 function drawFooter(doc: PDFKit.PDFDocument, pageNum: number) {
