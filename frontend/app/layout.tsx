@@ -93,6 +93,17 @@ export default function RootLayout({
         >
           {children}
         </main>
+
+        <footer
+          style={{
+            textAlign: 'center',
+            padding: '0 0 32px',
+            fontSize: '12px',
+            color: 'var(--text-3)',
+          }}
+        >
+          Shiv Nadar University Chennai &nbsp;·&nbsp; Placement Statistics &nbsp;·&nbsp; Built by Aditya B
+        </footer>
       </body>
     </html>
   );
