@@ -15,8 +15,10 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({ initialReports }: DashboardClientProps) {
-  const [activeFlags, setActiveFlags] = useState<string[]>([]);
+  const [additiveFlags, setAdditiveFlags] = useState<string[]>([]);
+  const [advancedFlags, setAdvancedFlags] = useState<string[]>([]);
   const [spreadsheetId, setSpreadsheetId] = useState<string | undefined>();
+  const activeFlags = [...additiveFlags, ...advancedFlags];
   const [reports, setReports] = useState<ReportEntry[]>(initialReports);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -55,8 +57,8 @@ export function DashboardClient({ initialReports }: DashboardClientProps) {
         }}
         className="animate-fade-up-2"
       >
-        <FlagToggles onChange={setActiveFlags} />
-        <SettingsPanel onChange={setSpreadsheetId} />
+        <FlagToggles onChange={setAdditiveFlags} />
+        <SettingsPanel onChange={setSpreadsheetId} onFlagsChange={setAdvancedFlags} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '4px' }}>
           <GenerateButton

@@ -83,7 +83,7 @@ program
       let charts = null;
       if (withCharts) {
         spinner.start('Generating charts…');
-        charts = await generateCharts(stats, ctcStats);
+        charts = await generateCharts(stats, ctcStats, reportOpts);
         spinner.succeed('Charts generated (8 charts)');
       } else {
         console.log('  ⚡ Charts skipped (--no-charts)');

@@ -1,7 +1,7 @@
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 import { Chart, registerables } from 'chart.js';
 import type { ChartConfiguration, TooltipItem } from 'chart.js';
-import type { PlacementStats, CtcStats, ChartBuffers } from './types.js';
+import type { PlacementStats, CtcStats, ChartBuffers, ReportOptions } from './types.js';
 import { BRANCH_ORDER, BRANCH_COLORS, MERGED_BRANCH_ORDER, MERGED_BRANCH_COLORS } from './config.js';
 
 Chart.register(...registerables);
@@ -21,7 +21,7 @@ function makeCanvas(width: number, height: number) {
 }
 
 // All chart titles are added by PDFKit (bold navy text above the image)
-export async function generateCharts(stats: PlacementStats, ctcStats: CtcStats): Promise<ChartBuffers> {
+export async function generateCharts(stats: PlacementStats, ctcStats: CtcStats, opts?: ReportOptions): Promise<ChartBuffers> {
   const [
     overallPie, branchBarMerged, branchBarSections,
     classStackedBar, genderGroupedBar,
@@ -31,7 +31,7 @@ export async function generateCharts(stats: PlacementStats, ctcStats: CtcStats):
     renderBranchBarMerged(stats),
     renderBranchBarSections(stats),
     renderClassStackedBar(stats),
-    renderGenderGroupedBar(stats),
+    renderGenderGroupedBar(stats, opts?.showSections ?? false),
     renderOfferTypeBar(ctcStats),
     renderCtcBracketsBar(ctcStats),
     renderTopRecruitersHBar(stats),
@@ -152,22 +152,26 @@ async function renderClassStackedBar(stats: PlacementStats): Promise<Buffer> {
   return render(canvas, config);
 }
 
-async function renderGenderGroupedBar(stats: PlacementStats): Promise<Buffer> {
-  const canvas = makeCanvas(1200, 580);
+async function renderGenderGroupedBar(stats: PlacementStats, showSections: boolean): Promise<Buffer> {
+  // Use section-level data when --sections is active, merged branch data otherwise
+  const labels   = showSections ? BRANCH_ORDER        : MERGED_BRANCH_ORDER;
+  const source   = showSections ? stats.branches      : stats.mergedBranches;
+
+  const canvas = makeCanvas(showSections ? 1300 : 1100, 580);
   const config: ChartConfiguration<'bar'> = {
     type: 'bar',
     data: {
-      labels: BRANCH_ORDER,
+      labels,
       datasets: [
         {
           label: 'Male Placement %',
-          data: BRANCH_ORDER.map(b => stats.branches.find(x => x.label === b)?.malePlacedPercent ?? 0),
+          data: labels.map(b => source.find(x => x.label === b)?.malePlacedPercent ?? 0),
           backgroundColor: '#2563EB',
           borderRadius: 5,
         },
         {
           label: 'Female Placement %',
-          data: BRANCH_ORDER.map(b => stats.branches.find(x => x.label === b)?.femalePlacedPercent ?? 0),
+          data: labels.map(b => source.find(x => x.label === b)?.femalePlacedPercent ?? 0),
           backgroundColor: '#EC4899',
           borderRadius: 5,
         },
@@ -181,7 +185,7 @@ async function renderGenderGroupedBar(stats: PlacementStats): Promise<Buffer> {
       },
       scales: {
         y: { min: 0, max: 100, ticks: { callback: (v: string | number) => `${v}%`, font: { size: 14 } }, grid: { color: '#E5E7EB' } },
-        x: { grid: { display: false }, ticks: { font: { size: 13 } } },
+        x: { grid: { display: false }, ticks: { font: { size: showSections ? 12 : 14 } } },
       },
     },
   };

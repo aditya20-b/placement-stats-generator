@@ -17,7 +17,7 @@ const FLAG_ICONS: Record<string, string> = {
 };
 
 export function FlagToggles({ onChange }: FlagTogglesProps) {
-  const reportFlags = FLAG_DEFINITIONS.filter((f) => f.group === 'report');
+  const reportFlags = FLAG_DEFINITIONS.filter((f) => f.group === 'additive');
 
   const [enabled, setEnabled] = useState<Record<string, boolean>>(
     Object.fromEntries(reportFlags.map((f) => [f.flag, f.defaultEnabled]))
