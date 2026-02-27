@@ -32,7 +32,7 @@ export default async function HomePage() {
           style={{
             fontFamily: 'var(--font-display)',
             fontSize: '24px',
-            fontWeight: '600',
+            fontWeight: '700',
             color: 'var(--text)',
             margin: '0 0 4px',
           }}
