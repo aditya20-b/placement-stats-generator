@@ -31,12 +31,10 @@ export default async function HistoryPage() {
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: '26px',
+              fontSize: '24px',
               fontWeight: '600',
               color: 'var(--text)',
               margin: 0,
-              lineHeight: 1.15,
-              letterSpacing: '-0.03em',
             }}
           >
             Report History
