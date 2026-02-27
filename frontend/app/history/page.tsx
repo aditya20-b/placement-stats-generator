@@ -31,7 +31,7 @@ export default async function HistoryPage() {
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: '28px',
+              fontSize: '22px',
               fontWeight: '600',
               color: 'var(--text)',
               margin: 0,
