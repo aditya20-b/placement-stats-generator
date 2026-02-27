@@ -85,7 +85,7 @@ export function LatestReport({ report }: LatestReportProps) {
           <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '11px', fontWeight: '600', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 4px' }}>
             Latest Report &nbsp;·&nbsp; Batch 2022–2026
           </p>
-          <p style={{ color: 'white', fontSize: '15px', fontWeight: '600', margin: '0 0 2px', fontFamily: 'var(--font-display)' }}>
+          <p style={{ color: 'white', fontSize: '15px', fontWeight: '600', margin: '0 0 2px' }}>
             {formatDate(timestamp)}
           </p>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', margin: 0 }}>
@@ -149,7 +149,7 @@ export function LatestReport({ report }: LatestReportProps) {
             <p style={{ fontSize: '11px', color: 'var(--text-3)', margin: '0 0 4px', fontWeight: '500', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
               {s.label}
             </p>
-            <p style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', margin: '0 0 2px', fontFamily: 'var(--font-display)', lineHeight: 1 }}>
+            <p style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text)', margin: '0 0 2px', lineHeight: 1 }}>
               {s.value}
             </p>
             <p style={{ fontSize: '11.5px', color: 'var(--text-3)', margin: 0 }}>

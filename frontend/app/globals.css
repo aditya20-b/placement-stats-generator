@@ -21,8 +21,8 @@
   --nav-text:  #A1A1AA;
   --nav-active:#FAFAFA;
 
-  --font-display: 'DM Serif Display', Georgia, serif;
-  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
 
   --radius-sm: 6px;
   --radius:    10px;
