@@ -15,16 +15,28 @@ export default async function HistoryPage() {
   return (
     <div>
       <div style={{ marginBottom: '32px' }} className="animate-fade-up-1">
+        <p
+          style={{
+            fontSize: '11px',
+            fontWeight: '600',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'var(--text-3)',
+            margin: '0 0 6px',
+          }}
+        >
+          Shiv Nadar University Chennai
+        </p>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: '30px',
+              fontSize: '32px',
               fontWeight: '400',
               color: 'var(--text)',
               margin: 0,
               lineHeight: 1.15,
-              letterSpacing: '-0.01em',
+              letterSpacing: '-0.02em',
             }}
           >
             Report History
@@ -49,7 +61,7 @@ export default async function HistoryPage() {
         <p style={{ fontSize: '13.5px', color: 'var(--text-3)', margin: 0 }}>
           {reports.length === 0
             ? 'No reports generated yet'
-            : 'All generated reports — newest first'}
+            : 'B.Tech batch 2022–2026 · All generated reports, newest first'}
         </p>
       </div>
 

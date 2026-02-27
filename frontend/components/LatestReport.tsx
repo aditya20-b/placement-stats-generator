@@ -83,7 +83,7 @@ export function LatestReport({ report }: LatestReportProps) {
       >
         <div>
           <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '11px', fontWeight: '600', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 4px' }}>
-            Latest Report
+            Latest Report &nbsp;·&nbsp; Batch 2022–2026
           </p>
           <p style={{ color: 'white', fontSize: '15px', fontWeight: '600', margin: '0 0 2px', fontFamily: 'var(--font-display)' }}>
             {formatDate(timestamp)}

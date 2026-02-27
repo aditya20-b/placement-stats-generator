@@ -16,23 +16,33 @@ export default async function HomePage() {
     <div>
       {/* Page header */}
       <div style={{ marginBottom: '32px' }} className="animate-fade-up-1">
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '4px' }}>
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '30px',
-              fontWeight: '400',
-              color: 'var(--text)',
-              margin: 0,
-              lineHeight: 1.15,
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Report Generator
-          </h1>
-        </div>
+        <p
+          style={{
+            fontSize: '11px',
+            fontWeight: '600',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'var(--text-3)',
+            margin: '0 0 6px',
+          }}
+        >
+          Shiv Nadar University Chennai
+        </p>
+        <h1
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: '32px',
+            fontWeight: '400',
+            color: 'var(--text)',
+            margin: '0 0 4px',
+            lineHeight: 1.15,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          Placement Report Generator
+        </h1>
         <p style={{ fontSize: '13.5px', color: 'var(--text-3)', margin: 0 }}>
-          Shiv Nadar University Chennai &nbsp;·&nbsp; Batch 2025
+          B.Tech graduating batch &nbsp;·&nbsp; 2022 – 2026
         </p>
       </div>
 
