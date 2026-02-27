@@ -12,8 +12,6 @@ export default async function HomePage() {
     // reports branch may not exist yet
   }
 
-  const latestReport = reports[0] ?? null;
-
   return (
     <div>
       {/* Page header */}
@@ -38,7 +36,7 @@ export default async function HomePage() {
         </p>
       </div>
 
-      <DashboardClient latestReport={latestReport} />
+      <DashboardClient initialReports={reports} />
     </div>
   );
 }

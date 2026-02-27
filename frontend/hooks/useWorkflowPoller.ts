@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 
 export type WorkflowStatus =
   | 'idle'
@@ -12,12 +11,9 @@ export type WorkflowStatus =
   | 'timeout'
   | 'error';
 
-interface PollerState {
+interface UseWorkflowPollerReturn {
   status: WorkflowStatus;
   elapsedSeconds: number;
-}
-
-interface UseWorkflowPollerReturn extends PollerState {
   startPolling: (runId: number) => void;
 }
 
@@ -25,8 +21,7 @@ const POLL_INTERVAL_MS = 4000;
 const MAX_POLLS = 150; // 10 minutes
 const MAX_CONSECUTIVE_ERRORS = 5;
 
-export function useWorkflowPoller(): UseWorkflowPollerReturn {
-  const router = useRouter();
+export function useWorkflowPoller(onComplete: () => void): UseWorkflowPollerReturn {
   const [status, setStatus] = useState<WorkflowStatus>('idle');
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
@@ -34,6 +29,8 @@ export function useWorkflowPoller(): UseWorkflowPollerReturn {
   const startTimeRef = useRef<number>(0);
   const pollCountRef = useRef(0);
   const consecutiveErrorsRef = useRef(0);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   const stopPolling = useCallback(() => {
     if (intervalRef.current) {
@@ -81,9 +78,8 @@ export function useWorkflowPoller(): UseWorkflowPollerReturn {
             stopPolling();
             if (data.conclusion === 'success') {
               setStatus('completed');
-              setTimeout(() => {
-                router.refresh();
-              }, 1000);
+              // Wait a beat then fetch fresh reports directly — bypasses CDN cache
+              setTimeout(() => onCompleteRef.current(), 1500);
             } else {
               setStatus('failed');
             }
@@ -97,7 +93,7 @@ export function useWorkflowPoller(): UseWorkflowPollerReturn {
         }
       }, POLL_INTERVAL_MS);
     },
-    [router, stopPolling]
+    [stopPolling]
   );
 
   useEffect(() => {
