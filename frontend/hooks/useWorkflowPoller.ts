@@ -25,7 +25,8 @@ export function useWorkflowPoller(onComplete: () => void): UseWorkflowPollerRetu
   const [status, setStatus] = useState<WorkflowStatus>('idle');
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const tickIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
   const pollCountRef = useRef(0);
   const consecutiveErrorsRef = useRef(0);
@@ -33,9 +34,13 @@ export function useWorkflowPoller(onComplete: () => void): UseWorkflowPollerRetu
   onCompleteRef.current = onComplete;
 
   const stopPolling = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+    if (tickIntervalRef.current) {
+      clearInterval(tickIntervalRef.current);
+      tickIntervalRef.current = null;
     }
   }, []);
 
@@ -48,9 +53,12 @@ export function useWorkflowPoller(onComplete: () => void): UseWorkflowPollerRetu
       setStatus('queued');
       setElapsedSeconds(0);
 
-      intervalRef.current = setInterval(async () => {
-        const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
-        setElapsedSeconds(elapsed);
+      // 1-second tick for smooth elapsed display
+      tickIntervalRef.current = setInterval(() => {
+        setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
+      }, 1000);
+
+      pollIntervalRef.current = setInterval(async () => {
         pollCountRef.current++;
 
         if (pollCountRef.current > MAX_POLLS) {
@@ -96,9 +104,7 @@ export function useWorkflowPoller(onComplete: () => void): UseWorkflowPollerRetu
     [stopPolling]
   );
 
-  useEffect(() => {
-    return () => stopPolling();
-  }, [stopPolling]);
+  useEffect(() => () => stopPolling(), [stopPolling]);
 
   return { status, elapsedSeconds, startPolling };
 }
