@@ -31,12 +31,12 @@ export default async function HomePage() {
         <h1
           style={{
             fontFamily: 'var(--font-display)',
-            fontSize: '22px',
+            fontSize: '26px',
             fontWeight: '600',
             color: 'var(--text)',
             margin: '0 0 4px',
             lineHeight: 1.15,
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.03em',
           }}
         >
           Placement Report Generator
