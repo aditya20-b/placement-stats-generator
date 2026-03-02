@@ -8,12 +8,13 @@ interface FlagTogglesProps {
 }
 
 const FLAG_ICONS: Record<string, string> = {
-  '--sections':    '⊞',
-  '--gender':      '◑',
-  '--companies':   '◈',
-  '--no-ctc':      '◻',
-  '--no-timeline': '◻',
-  '--ctc-brackets':'▦',
+  '--sections':     '⊞',
+  '--gender':       '◑',
+  '--companies':    '◈',
+  '--no-ctc':       '◻',
+  '--no-timeline':  '◻',
+  '--ctc-brackets': '▦',
+  '--class-status': '▤',
 };
 
 export function FlagToggles({ onChange }: FlagTogglesProps) {
