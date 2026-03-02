@@ -36,6 +36,13 @@ export const FLAG_DEFINITIONS: FlagDefinition[] = [
     defaultEnabled: false,
   },
   {
+    flag: '--class-status',
+    label: 'Class Status Overview',
+    description: 'Include class-wise stacked student status chart (Placed / Not Placed / Higher Studies)',
+    group: 'additive',
+    defaultEnabled: false,
+  },
+  {
     flag: '--no-ctc',
     label: 'Hide CTC Page',
     description: 'Hide the CTC & offer type analysis page from the report',
@@ -52,7 +59,14 @@ export const FLAG_DEFINITIONS: FlagDefinition[] = [
   {
     flag: '--no-charts',
     label: 'Skip Charts',
-    description: 'Skip chart generation (faster, tables only)',
+    description: 'Skip chart generation, tables only (PNG renderer only)',
+    group: 'advanced',
+    defaultEnabled: false,
+  },
+  {
+    flag: '--renderer png',
+    label: 'PNG Renderer',
+    description: 'Experimental: use the legacy Chart.js PNG renderer instead of the default vector renderer',
     group: 'advanced',
     defaultEnabled: false,
   },
