@@ -84,17 +84,19 @@ export interface CtcStats {
 }
 
 export interface ReportOptions {
-  showSections:    boolean; // --sections     : AIDS A/B, IOT A/B individually (default: merged)
-  showGender:      boolean; // --gender       : gender breakdown chart
-  showCompanies:   boolean; // --companies    : company analysis page
-  showCtc:         boolean; // --no-ctc       : hide CTC page (default: show)
-  showTimeline:    boolean; // --no-timeline  : hide monthly timeline (default: show)
-  showCtcBrackets: boolean; // --ctc-brackets : show CTC bracket distribution chart
+  showSections:    boolean; // --sections      : AIDS A/B, IOT A/B individually (default: merged)
+  showGender:      boolean; // --gender        : gender breakdown chart
+  showClassStatus: boolean; // --class-status  : class-wise stacked status chart (default: hidden)
+  showCompanies:   boolean; // --companies     : company analysis page
+  showCtc:         boolean; // --no-ctc        : hide CTC page (default: show)
+  showTimeline:    boolean; // --no-timeline   : hide monthly timeline (default: show)
+  showCtcBrackets: boolean; // --ctc-brackets  : show CTC bracket distribution chart
 }
 
 export const DEFAULT_OPTIONS: ReportOptions = {
   showSections:    false,
   showGender:      false,
+  showClassStatus: false,
   showCompanies:   false,
   showCtc:         true,
   showTimeline:    true,
