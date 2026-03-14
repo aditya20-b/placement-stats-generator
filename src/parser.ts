@@ -40,6 +40,17 @@ export function parseOfferDetails(csvText: string): OfferRecord[] {
   return records;
 }
 
+export function parseCompanyList(csvText: string): number {
+  const result = Papa.parse<string[]>(csvText, { header: false, skipEmptyLines: true });
+  // Sheet has a blank leading column — find which col has "S_No"
+  const headerRow = result.data.find(row => row.some(c => c?.toString().trim() === 'S_No'));
+  if (!headerRow) return result.data.length; // fallback
+  const sNoCol = headerRow.findIndex(c => c?.toString().trim() === 'S_No');
+  const headerIdx = result.data.indexOf(headerRow);
+  // Count only rows where S_No column is a number (skip trailing empty/formatting rows)
+  return result.data.slice(headerIdx + 1).filter(row => /^\d+$/.test(row[sNoCol]?.toString().trim())).length;
+}
+
 export function parseMasterSheet(csvText: string): StudentRecord[] {
   const result = Papa.parse<string[]>(csvText, {
     header: false,

@@ -1,6 +1,7 @@
 export const SPREADSHEET_ID = '1U2qXle0-70mWfAj9En_YoQJShbcI2fYY230kCGbLiXE';
 export const MASTER_GID = '1878175017';
 export const OFFER_DETAILS_GID = '208317160';
+export const COMPANY_LIST_GID = '1917404590';
 
 export function getSpreadsheetId(): string {
   return process.env.SPREADSHEET_ID ?? SPREADSHEET_ID;
@@ -10,8 +11,9 @@ function csvUrl(sheetId: string, gid: string): string {
   return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
 }
 
-export const getMasterCsvUrl      = () => csvUrl(getSpreadsheetId(), MASTER_GID);
+export const getMasterCsvUrl       = () => csvUrl(getSpreadsheetId(), MASTER_GID);
 export const getOfferDetailsCsvUrl = () => csvUrl(getSpreadsheetId(), OFFER_DETAILS_GID);
+export const getCompanyListCsvUrl  = () => csvUrl(getSpreadsheetId(), COMPANY_LIST_GID);
 
 export const BRANCH_ORDER = ['AIDS A', 'AIDS B', 'IOT A', 'IOT B', 'CS'];
 

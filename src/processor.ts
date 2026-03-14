@@ -44,7 +44,7 @@ function computeBranchStats(records: StudentRecord[], label: string, matchFn: (r
   };
 }
 
-export function computeStats(records: StudentRecord[]): PlacementStats {
+export function computeStats(records: StudentRecord[], totalCompaniesOverride?: number): PlacementStats {
   const totalCount    = records.length;
   const optPlacement  = records.filter(r => r.choice === 'Placement').length;
   const higherStudies = records.filter(r => r.choice === 'Higher Studies').length;
@@ -94,7 +94,7 @@ export function computeStats(records: StudentRecord[]): PlacementStats {
     totalCount, optPlacement, higherStudies, exempt,
     placed, notPlaced, hold, dropped, internshipOnly,
     overallPlacementPercent, totalOffers,
-    totalCompanies: companies.length,
+    totalCompanies: totalCompaniesOverride ?? companies.length,
     branches, mergedBranches, companies, topRecruiters,
   };
 }

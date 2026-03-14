@@ -3,9 +3,9 @@ import { Command } from 'commander';
 import ora from 'ora';
 import path from 'path';
 import { fetchCsv } from './fetcher.js';
-import { parseMasterSheet, parseOfferDetails } from './parser.js';
+import { parseMasterSheet, parseOfferDetails, parseCompanyList } from './parser.js';
 import { computeStats, computeCtcStats } from './processor.js';
-import { getMasterCsvUrl, getOfferDetailsCsvUrl, OUTPUT_DIR, OUTPUT_FILENAME } from './config.js';
+import { getMasterCsvUrl, getOfferDetailsCsvUrl, getCompanyListCsvUrl, OUTPUT_DIR, OUTPUT_FILENAME } from './config.js';
 import type { ReportOptions } from './types.js';
 import { DEFAULT_OPTIONS } from './types.js';
 
@@ -53,9 +53,10 @@ program
 
     try {
       spinner.start('Fetching data from Google Sheets…');
-      const [masterCsv, offerCsv] = await Promise.all([
+      const [masterCsv, offerCsv, companyListCsv] = await Promise.all([
         fetchCsv(getMasterCsvUrl()),
         fetchCsv(getOfferDetailsCsvUrl()),
+        fetchCsv(getCompanyListCsvUrl()),
       ]);
       spinner.succeed(
         `Data fetched — Master: ${(masterCsv.length / 1024).toFixed(1)} KB, ` +
@@ -63,12 +64,13 @@ program
       );
 
       spinner.start('Parsing records…');
-      const records      = parseMasterSheet(masterCsv);
-      const offerRecords = parseOfferDetails(offerCsv);
+      const records        = parseMasterSheet(masterCsv);
+      const offerRecords   = parseOfferDetails(offerCsv);
+      const totalCompanies = parseCompanyList(companyListCsv);
       spinner.succeed(`Parsed ${records.length} students, ${offerRecords.length} offer records`);
 
       spinner.start('Computing placement statistics…');
-      const stats    = computeStats(records);
+      const stats    = computeStats(records, totalCompanies);
       const ctcStats = computeCtcStats(offerRecords);
       spinner.succeed(
         `Stats computed — ${stats.placed}/${stats.optPlacement} placed ` +
