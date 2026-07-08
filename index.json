@@ -1,5 +1,22 @@
 [
   {
+    "id": "20260708-094932",
+    "timestamp": "2026-07-08T09:49:32Z",
+    "filename": "placement-report-20260708-094932.pdf",
+    "flags": [
+      "--companies",
+      "--ctc-brackets"
+    ],
+    "spreadsheetId": null,
+    "stats": {
+      "placed": 243,
+      "optPlacement": 274,
+      "placementPercent": "88.7",
+      "totalCompanies": 77,
+      "medianCtc": "8.00"
+    }
+  },
+  {
     "id": "20260708-094119",
     "timestamp": "2026-07-08T09:41:19Z",
     "filename": "placement-report-20260708-094119.pdf",
